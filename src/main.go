@@ -21,7 +21,7 @@ func main() {
 			fmt.Println("Could NOT accept connection", err.Error())
 			os.Exit(1)
 		}
-		handleConnection(connection)
+		go handleConnection(connection)
 	}
 
 }
@@ -30,14 +30,11 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	// Read data
 	input := make([]byte, 1024)
-	num, err := conn.Read(input)
-	if err != nil {
-		log.Printf("Couldn't read input")
-		return
+	for {
+		num, _ := conn.Read(input)
+		log.Println("Received input: ", input[:num])
+		conn.Write([]byte("+PONG\r\n"))
 	}
-
-	log.Println("Received input: ", input[:num])
-	conn.Write([]byte("+PONG\r\n"))
 	//if bytes.Equal(input, []byte("PING")) {
 	//	conn.Write([]byte("+PONG\r\n"))
 	//}
