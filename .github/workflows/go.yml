@@ -1,0 +1,23 @@
+name: Build and Test
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [ '1.19.3', '1.20.x', '1.21.x' ]
+    steps:
+      - uses: action/checkout@v4
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache-dependency-path: subdir/go.sum
+      - name: Display Go version
+        run: go version
+      - name: Installing Dependencies...
+        run: go get .
+      - name: Building...
+        run: go build -v src/main.go
+      - name: Testing...
+        run: go test src/main.go
